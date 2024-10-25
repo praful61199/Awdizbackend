@@ -1,6 +1,7 @@
 import express  from "express"; 
 import dotenv from "dotenv"
 // import { Login, Register } from "./controllers/auth.controller.js"; 
+import mongoose from "mongoose";
 
 import allRoutes from "./routes/index.js"
 
@@ -18,6 +19,8 @@ app.get("/", (req,res) =>{
 // app.post("/register" , Register)
 
 app.use("/api/v1", allRoutes)
+
+mongoose.connect(process.env.MONGODBURL).then(()=>{console.log("mongodb connected")})
 
 
 
