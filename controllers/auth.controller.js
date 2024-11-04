@@ -1,45 +1,87 @@
 import User from "../models/user.schema.js";
 import bcrypt from "bcrypt"
 
-  export const Login =  async(req,res) =>{
-    try{
+//   export const Login =  async(req,res) =>{
+//     try{
 
-      const {name,email} = req.body.userData;
-      if(!name || !email){
-        return res.send("name and email are required")
-      }
-      if(password !== confirmpassword){
-        return res.send("password does not match")
-      }
+//       const {name,email} = req.body.userData;
+//       if(!name || !email){
+//         return res.send("name and email are required")
+//       }
+     
 
-      const emailcheck = await User.findOne({email:email});
-      console.log(emailcheck , "emailcheck");
-      if(!emailcheck){
-        return res.send("email not exist ")
-      }
+//       const emailcheck = await User.findOne({email:email});
+//       console.log(emailcheck , "emailcheck");
+//       if(!emailcheck){
+//         return res.json({message:"email not exist " ,success :false})
+//       }
       
 
-      const encryptpassword = bcrypt.compare(password,emailcheck.password)
-      if(!encryptpassword){
-        return res.send("password not match")
-      }
+//       const encryptpassword = bcrypt.compare(password,emailcheck.password)
+//       if(!encryptpassword){
+//         return res.send("password not match")
+//       }
 
-      const newuser = new User({
-        name,
-        email,
-        password : encryptpassword
-      })
-      await newuser.save()
+//       const newuser = new User({
+//         name,
+//         email,
+//         password : encryptpassword
+//       })
+//       await newuser.save()
   
 
 
     
-    res.send("welcome to login from auth ")
-    }catch(error){
-      return res.send(error)
+//     res.send("welcome to login from auth ")
+//     }catch(error){
+//       return res.send(error)
 
-    }
-};
+//     }
+// };
+
+export const Login=async (req,res)=>{
+  try{
+  
+  const{email,password}=req.body.userData;
+  console.log("email",email,"password",password)
+  if(!email || !password){
+      return res.json({message:"Fill the fields", success:false})
+  }
+  const existemail= await Usermodel.findOne({email:email})
+  console.log(existemail);
+  if(!existemail){
+      return res.json({message:"Email not found Try again",success:false})
+  }
+  const passwordcheck=await bcrypt.compare(password,existemail.password)
+  if(!passwordcheck){
+      return res.json({message:"wrong password Try again",success:false})
+  }
+  
+  const encryptedtoken=jwt.sign({Userid:existemail._id},process.env.ENCRYPTIONSECRET);
+  console.log(encryptedtoken,"ENCRYPTEDTOKEN")
+  
+  res.cookie("Token",encryptedtoken)
+  
+  return res.json({
+      message:"Login Successful",
+      success:true,
+      Userdata:{
+          email:existemail.email,password:existemail.password,name:existemail.name
+      }
+  
+  
+  
+  });
+  
+  
+  
+  
+  }
+  catch(error){
+      console.log(error);
+  
+  }
+  }
 
 export const Register = async (req, res) => {
   try {
@@ -68,7 +110,7 @@ export const Register = async (req, res) => {
     console.log(ResponseFromMongoDb);
 
     return res.json(
-      { message: "Register page from auth.controller.js after nodemon installation..", success: true }
+      { message: "Registeration complete nodemon", success: true }
     );
   } catch (error) {
     res.json({ message: error, success: false });
