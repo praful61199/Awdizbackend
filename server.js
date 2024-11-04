@@ -4,8 +4,10 @@ import dotenv from "dotenv"
 import mongoose from "mongoose";
 
 import allRoutes from "./routes/index.js"
+import cors from "cors"
 
 const app = express() 
+app.use(cors())
 
 app.use(express.json())  // inbuilt middleware // it parse all requests
 dotenv.config()
